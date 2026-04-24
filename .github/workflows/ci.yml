@@ -1,0 +1,79 @@
+name: sim
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  sim:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      # System toolchain + verilator from apt. These are sufficient for
+      # LiteX simulation with VexRiscv; no xPack / riscv-gnu-toolchain
+      # source build required.
+      - name: Install system packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential \
+            gcc-riscv64-unknown-elf \
+            picolibc-riscv64-unknown-elf \
+            verilator \
+            meson \
+            ninja-build \
+            python3 python3-pip python3-setuptools
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install LiteX
+        run: |
+          mkdir -p $HOME/litex && cd $HOME/litex
+          wget -q https://raw.githubusercontent.com/enjoy-digital/litex/master/litex_setup.py
+          chmod +x litex_setup.py
+          ./litex_setup.py --init --install --user --config=standard
+
+      - name: Cache litex_sim verilator build
+        uses: actions/cache@v4
+        with:
+          path: build/sim/gateware/obj_dir
+          key: vsim-${{ runner.os }}-${{ hashFiles('firmware/linker.ld', 'sim/gen_soc.py') }}
+
+      - name: Generate SoC (one-time, ~minutes)
+        run: ./sim/gen_soc.py
+
+      # First test run bakes the Vsim simulator if the cache missed.
+      # Subsequent runs within the job reuse it.
+      - name: Run boot test
+        run: python3 -m pytest -v -s test/test_boot.py
+
+      - name: Run blinky test
+        run: python3 -m pytest -v -s test/test_blinky.py
+
+      - name: Run queues test
+        run: python3 -m pytest -v -s test/test_queues.py
+
+      - name: Run full_demo tests
+        run: python3 -m pytest -v -s test/test_full_demo.py
+
+      - name: Upload firmware artefacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware-debug-${{ github.run_id }}
+          path: |
+            firmware/firmware.elf
+            firmware/firmware.bin
+            firmware/firmware.elf.map
+            build/sim/gateware/sim_main_ram.init
+          if-no-files-found: ignore
+          retention-days: 7

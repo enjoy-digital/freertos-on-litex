@@ -1,0 +1,12 @@
+build/
+*.o
+*.d
+*.a
+*.elf
+*.bin
+*.map
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+obj_dir/
