@@ -8,6 +8,7 @@ sudo apt-get install -y \
     gcc-riscv64-unknown-elf \
     picolibc-riscv64-unknown-elf \
     verilator \
+    libevent-dev libjson-c-dev zlib1g-dev \
     meson ninja-build \
     python3 python3-pip
 ```
