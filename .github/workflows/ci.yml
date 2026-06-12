@@ -35,6 +35,9 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Install pytest
+        run: pip install pytest
+
       - name: Install LiteX
         run: |
           mkdir -p $HOME/litex && cd $HOME/litex
@@ -42,8 +45,11 @@ jobs:
           chmod +x litex_setup.py
           ./litex_setup.py --init --install --user --config=standard
 
-      - name: Cache litex_sim verilator build
-        uses: actions/cache@v4
+      # Restore/save split (instead of plain actions/cache) so the
+      # Verilator build is kept even when a later test step fails —
+      # re-runs then start from a warm simulator.
+      - name: Restore litex_sim verilator build
+        uses: actions/cache/restore@v4
         with:
           path: build/sim/gateware/obj_dir
           key: vsim-${{ runner.os }}-${{ hashFiles('firmware/linker.ld', 'sim/gen_soc.py') }}
@@ -51,8 +57,20 @@ jobs:
       - name: Generate SoC (one-time, ~minutes)
         run: ./sim/gen_soc.py
 
-      # First test run bakes the Vsim simulator if the cache missed.
-      # Subsequent runs within the job reuse it.
+      # Bake the Vsim simulator outside pytest if the cache missed: the
+      # first-time Verilator compile takes several minutes, more than
+      # the per-test subprocess timeout allows. Also smoke-runs the
+      # smallest demo once. Subsequent test runs reuse the simulator.
+      - name: Build simulator + smoke run
+        run: ./sim/run_sim.py --demo blinky_only --timeout 600
+
+      - name: Save litex_sim verilator build
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: build/sim/gateware/obj_dir
+          key: vsim-${{ runner.os }}-${{ hashFiles('firmware/linker.ld', 'sim/gen_soc.py') }}
+
       - name: Run boot test
         run: python3 -m pytest -v -s test/test_boot.py
 
