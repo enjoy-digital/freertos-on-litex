@@ -1,4 +1,4 @@
-# litex_freertos
+# freertos-on-litex
 
 Run [FreeRTOS](https://www.freertos.org/) as the firmware on a
 [LiteX](https://github.com/enjoy-digital/litex) SoC, validated
@@ -6,7 +6,7 @@ end-to-end in `litex_sim` with a VexRiscv RISC-V soft core, no FPGA
 required.
 
 ```
---========= litex_freertos =========--
+--========= freertos-on-litex =========--
 FreeRTOS:        V11.3.0    heap: 65536 bytes
 CPU:             VexRiscv @ 1000000 Hz   tick: 1000 Hz
 Demo:            full_demo
@@ -74,8 +74,8 @@ Requirements: `riscv64-unknown-elf-gcc` with `rv32im/ilp32` multilib,
 names on Ubuntu.
 
 ```sh
-git clone --recursive https://github.com/enjoy-digital/litex_freertos
-cd litex_freertos
+git clone --recursive https://github.com/enjoy-digital/freertos-on-litex
+cd freertos-on-litex
 
 # 1. Generate the simulated SoC (VexRiscv, 16 MiB main_ram, timer-uptime).
 ./sim/gen_soc.py

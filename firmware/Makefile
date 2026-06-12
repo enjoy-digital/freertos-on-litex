@@ -1,4 +1,4 @@
-# Firmware build for litex_freertos.
+# Firmware build for freertos-on-litex.
 #
 # Invocation:
 #   make BUILD_DIRECTORY=<litex_sim output dir>               # default demo
@@ -135,7 +135,7 @@ port.o heap_4.o: CFLAGS += $(RTOS_WARN_SILENCE)
 # every invocation — main.o is cheap (<100 ms).
 .PHONY: FORCE
 FORCE:
-main.o: CFLAGS += -DLITEX_FREERTOS_DEMO_NAME=\"$(DEMO)\"
+main.o: CFLAGS += -DFREERTOS_DEMO_NAME=\"$(DEMO)\"
 main.o: FORCE
 
 %.o: %.c

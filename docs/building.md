@@ -34,8 +34,8 @@ environment variables are needed once this import works.
 ## First build
 
 ```sh
-git clone --recursive https://github.com/enjoy-digital/litex_freertos
-cd litex_freertos
+git clone --recursive https://github.com/enjoy-digital/freertos-on-litex
+cd freertos-on-litex
 
 ./sim/gen_soc.py          # generates build/sim/...   (1-2 min)
 ./sim/run_sim.py          # default demo: full_demo   (first time: ~2 min)

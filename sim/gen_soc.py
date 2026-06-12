@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Generate a LiteX/VexRiscv simulator SoC suitable for litex_freertos.
+Generate a LiteX/VexRiscv simulator SoC suitable for freertos-on-litex.
 
 Usage:
     sim/gen_soc.py [--output-dir PATH] [--ram-size BYTES] [--force]

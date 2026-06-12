@@ -7,7 +7,7 @@ from conftest import run_demo
 def test_boot_banner():
     rc, out = run_demo("blinky_only", timeout=240)
     assert rc == 0, f"sim failed (rc={rc}):\n{out}"
-    assert "--========= litex_freertos =========--" in out, out
+    assert "--========= freertos-on-litex =========--" in out, out
     assert "FreeRTOS:" in out
     assert "VexRiscv" in out
     assert "tick: 1000 Hz" in out

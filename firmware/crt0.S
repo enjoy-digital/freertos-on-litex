@@ -1,5 +1,5 @@
 /*
- * Minimal RV32 startup for litex_freertos.
+ * Minimal RV32 startup for freertos-on-litex.
  *
  * Differs from LiteX's stock crt0 in two ways:
  *   - No `trap_entry` + `isr()` path. mtvec is set straight to the

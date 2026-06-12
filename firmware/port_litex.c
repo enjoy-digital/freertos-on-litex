@@ -382,7 +382,7 @@ static void halt_with(const char *marker)
 
 void litex_done(void)
 {
-    halt_with(LITEX_FREERTOS_DONE_MARKER);
+    halt_with(PORT_LITEX_DONE_MARKER);
 }
 
 void litex_fail(const char *why)
@@ -394,5 +394,5 @@ void litex_fail(const char *why)
         fputs(why, stdout);
         fputc('\n', stdout);
     }
-    halt_with(LITEX_FREERTOS_FAIL_MARKER);
+    halt_with(PORT_LITEX_FAIL_MARKER);
 }

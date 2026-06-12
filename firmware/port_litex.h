@@ -5,8 +5,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#ifndef LITEX_FREERTOS_PORT_LITEX_H
-#define LITEX_FREERTOS_PORT_LITEX_H
+#ifndef PORT_LITEX_H
+#define PORT_LITEX_H
 
 #include <stddef.h>
 #include <stdint.h>
@@ -18,8 +18,8 @@ extern "C" {
 /* Boot markers scraped by the simulation / test harness. Same sentinel
  * convention as litex_mquickjs: a single line on stdout terminates a
  * run with a pass/fail verdict. */
-#define LITEX_FREERTOS_DONE_MARKER "[rtos] done"
-#define LITEX_FREERTOS_FAIL_MARKER "[rtos] fail"
+#define PORT_LITEX_DONE_MARKER "[rtos] done"
+#define PORT_LITEX_FAIL_MARKER "[rtos] fail"
 
 /* --------------------------------------------------------------------
  * UART
@@ -60,4 +60,4 @@ void  litex_reboot(void);
 }
 #endif
 
-#endif /* LITEX_FREERTOS_PORT_LITEX_H */
+#endif /* PORT_LITEX_H */
