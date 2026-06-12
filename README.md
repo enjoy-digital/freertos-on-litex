@@ -1,5 +1,18 @@
 # freertos-on-litex
 
+```
+   ____            ___  __________  ____
+  / __/______ ___ / _ \/_  __/ __ \/ __/
+ / _// __/ -_) -_) , _/ / / / /_/ /\ \
+/_/ /_/  \__/\__/_/|_| /_/  \____/___/
+                 __   _ __      _  __
+    ___  ___    / /  (_) /____ | |/_/
+   / _ \/ _ \  / /__/ / __/ -_)>  <
+   \___/_//_/ /____/_/\__/\__/_/|_|
+
+       FreeRTOS on LiteX SoCs, easily!
+```
+
 Run [FreeRTOS](https://www.freertos.org/) as the firmware on a
 [LiteX](https://github.com/enjoy-digital/litex) SoC, validated
 end-to-end in `litex_sim` with a VexRiscv RISC-V soft core, no FPGA
