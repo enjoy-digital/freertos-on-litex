@@ -8,8 +8,7 @@
  *   - Implement a tiny UART layer: polling TX/RX for boot + pre-scheduler
  *     work, and an IRQ-driven RX path that hands bytes to a stream
  *     buffer so the shell task can block cleanly.
- *   - Implement run-time-stats counter, assert/hook stubs, and a boot
- *     trampoline that installs the FreeRTOS trap vector.
+ *   - Implement run-time-stats counter and assert/hook stubs.
  *
  * Copyright (c) 2026 EnjoyDigital <florent@enjoy-digital.fr>
  * SPDX-License-Identifier: BSD-2-Clause
@@ -32,10 +31,9 @@
 #include "port_litex.h"
 
 /* Declarations for symbols referenced by the FreeRTOS RISC-V port's
- * portASM.S (weak overrides in our case) and by crt0.S. */
+ * portASM.S (weak overrides in our case). */
 extern void freertos_risc_v_application_interrupt_handler(void);
 extern void freertos_risc_v_application_exception_handler(void);
-void litex_port_install_trap_vector(void);
 
 /* --------------------------------------------------------------------
  * mie / mtvec helpers
@@ -46,13 +44,6 @@ void litex_port_install_trap_vector(void);
  * there is no mtime on this CPU, and the FreeRTOS tick comes from
  * LiteX timer0 as a regular external IRQ. */
 #define MIE_MEI     (1u << 11)
-
-extern void freertos_risc_v_trap_handler(void);
-
-static inline void write_mtvec(uintptr_t addr)
-{
-    __asm volatile ("csrw mtvec, %0" :: "r" (addr));
-}
 
 static inline void set_mie(uint32_t bits)
 {
@@ -92,14 +83,6 @@ void vPortSetupTimerInterrupt(void)
      * off here — xPortStartFirstTask will flip it on when restoring the
      * first task's mstatus. */
     set_mie(MIE_MEI);
-}
-
-/* Called from startup before the scheduler is started. Installs our
- * trap vector (replacing LiteX's crt0 trap_entry) so that, once the
- * scheduler flips mstatus.MIE on, FreeRTOS receives the tick IRQ. */
-void litex_port_install_trap_vector(void)
-{
-    write_mtvec((uintptr_t)freertos_risc_v_trap_handler);
 }
 
 /* --------------------------------------------------------------------
@@ -181,9 +164,11 @@ char uart_read(void)
 
 int uart_read_nonblock(void)
 {
-    if (uart_rxempty_read())
-        return 0;
-    return 1;
+#ifdef CSR_UART_BASE
+    return !uart_rxempty_read();
+#else
+    return 0;
+#endif
 }
 
 /* No-op uart_init; libc/stdio.c does not reference it, but libbase

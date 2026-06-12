@@ -24,10 +24,6 @@
 #define FREERTOS_DEMO_NAME "unknown"
 #endif
 
-/* Provided by examples/<demo>.c. Creates tasks / queues / timers; must
- * not block. */
-extern void app_main(void);
-
 int main(void)
 {
     puts("\n--========= freertos-on-litex =========--");

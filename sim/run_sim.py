@@ -41,6 +41,8 @@ import sys
 import time
 from pathlib import Path
 
+from gen_soc import litex_sim_command
+
 
 DONE_MARKER = "[rtos] done"
 FAIL_MARKER = "[rtos] fail"
@@ -83,16 +85,7 @@ def first_time_sim_build(repo_root: Path, build_dir: Path, fw_bin: Path,
                          ram_size: str) -> Path:
     """Run litex_sim the 'normal' way once to produce obj_dir/Vsim.
     Slow (~2 min on first build). Returns the Vsim path."""
-    cmd = [
-        sys.executable, "-m", "litex.tools.litex_sim",
-        "--cpu-type=vexriscv",
-        f"--integrated-main-ram-size={ram_size}",
-        "--libc-mode=full",
-        "--timer-uptime",
-        f"--output-dir={build_dir}",
-        f"--ram-init={fw_bin}",
-        "--non-interactive",
-    ]
+    cmd = litex_sim_command(build_dir, ram_size) + [f"--ram-init={fw_bin}"]
     print("[run_sim] first-time simulator build — this takes a couple of minutes…")
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                             text=True, bufsize=1)

@@ -5,19 +5,11 @@
 # sim/run_sim.py with a specific demo and asserts on the captured UART
 # output.
 
-import os
 import subprocess
 from pathlib import Path
 
-import pytest
-
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-
-
-@pytest.fixture(scope="session")
-def repo_root() -> Path:
-    return REPO_ROOT
 
 
 def run_demo(demo: str, timeout: float = 300.0, send: str | None = None,
@@ -33,9 +25,8 @@ def run_demo(demo: str, timeout: float = 300.0, send: str | None = None,
         cmd += ["--send", send]
     if expect is not None:
         cmd += ["--expect", expect]
-    env = os.environ.copy()
     proc = subprocess.run(
-        cmd, capture_output=True, text=True, env=env,
+        cmd, capture_output=True, text=True,
         timeout=timeout + 60,
     )
     return proc.returncode, proc.stdout + proc.stderr

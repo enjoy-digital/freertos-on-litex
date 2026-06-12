@@ -24,6 +24,25 @@ import sys
 from pathlib import Path
 
 
+def litex_sim_command(output_dir, ram_size):
+    """Base litex_sim invocation, also imported by sim/run_sim.py for the
+    first-time simulator build — keeping the SoC configuration in one
+    place guarantees the Verilated simulator always matches the
+    generated software headers."""
+    return [
+        sys.executable, "-m", "litex.tools.litex_sim",
+        "--cpu-type=vexriscv",
+        f"--integrated-main-ram-size={ram_size}",
+        "--libc-mode=full",
+        # FreeRTOS uses timer0 as the tick source; --timer-uptime also
+        # gives us a 64-bit uptime counter we reuse for the run-time
+        # stats (see port_litex.c::ulPortGetRunTimeCounterValue).
+        "--timer-uptime",
+        f"--output-dir={output_dir}",
+        "--non-interactive",
+    ]
+
+
 def main():
     repo_root = Path(__file__).resolve().parent.parent
 
@@ -43,19 +62,7 @@ def main():
 
     out.mkdir(parents=True, exist_ok=True)
 
-    cmd = [
-        sys.executable, "-m", "litex.tools.litex_sim",
-        "--cpu-type=vexriscv",
-        f"--integrated-main-ram-size={args.ram_size}",
-        "--libc-mode=full",
-        # FreeRTOS uses timer0 as the tick source; --timer-uptime also
-        # gives us a 64-bit uptime counter we reuse for the run-time
-        # stats (see port_litex.c::ulPortGetRunTimeCounterValue).
-        "--timer-uptime",
-        f"--output-dir={out}",
-        "--no-compile-gateware",
-        "--non-interactive",
-    ]
+    cmd = litex_sim_command(out, args.ram_size) + ["--no-compile-gateware"]
     print("[gen_soc]", " ".join(cmd))
     return subprocess.call(cmd)
 

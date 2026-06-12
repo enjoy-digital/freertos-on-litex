@@ -21,6 +21,11 @@ extern "C" {
 #define PORT_LITEX_DONE_MARKER "[rtos] done"
 #define PORT_LITEX_FAIL_MARKER "[rtos] fail"
 
+/* Provided by the selected examples/<demo>.c. Called by main() before
+ * the scheduler starts: creates tasks / queues / timers; must not
+ * block. */
+void  app_main(void);
+
 /* --------------------------------------------------------------------
  * UART
  * ------------------------------------------------------------------ */
